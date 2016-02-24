@@ -22,7 +22,7 @@ public class SimpleReadBri {
   private static final String HOSTNAME = "192.168.0.100";
 
   public static void main(String[] args) throws InterruptedException {
-    Reader reader = new ReaderBri(readerConf());
+    Reader reader = new ReaderBri(readerConf(args));
     reader.addHandler(System.out::println);
     reader.start(command());
     Thread.sleep(TimeUnit.SECONDS.toMillis(10));
@@ -35,11 +35,20 @@ public class SimpleReadBri {
     return builder.build();
   }
 
-  private static ReaderConf readerConf() {
+  private static ReaderConf readerConf(String[] args) {
     SimpleReaderConf conf = new SimpleReaderConf();
-    conf.setHostname(HOSTNAME);
+    conf.setHostname(hostname(args[0]));
+    conf.setPort(port(args[1]));
     conf.setAntennas(antennas());
     return conf;
+  }
+
+  private static String hostname(String host) {
+    return notEmpty(host) ? host : HOSTNAME;
+  }
+
+  private static int port(String port) {
+    return notEmpty(port) ? Integer.parseInt(port) : 0;
   }
 
   private static Set<Antenna> antennas() {
@@ -51,4 +60,7 @@ public class SimpleReadBri {
     return antennas;
   }
 
+  private static boolean notEmpty(String host) {
+    return host != null && !host.isEmpty();
+  }
 }
